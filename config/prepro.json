@@ -1,0 +1,67 @@
+{
+  "application": {
+    "port": 3000
+  },
+  "system": {
+    "tokenTime": 432000,
+    "encrypKey": "1eb80c580e53e34283e06730b52465cf"
+  },
+  "database": {
+    "redis": {
+      "host": "172.16.0.31",
+      "password": "cpic1234",
+      "port": 6379
+    },
+    "mysql": {
+      "host": "172.16.0.31",
+      "databaseName": "picc",
+      "username": "developer",
+      "password": "BHU*9ol.",
+      "port": 3306
+    }
+  },
+  "arcgis": {
+    "internetUrl": "http://arcgis.gdpicc.gagogroup.cn:6088/arcgis/",
+    "intranetUrl": "http://arcgis.gdpicc.gagogroup.cn:6088/arcgis/",
+    "ptdUserName": "PTD_TEST",
+    "ptdPassword": "ptdtest123",
+    "yddUserName": "YDD_TEST",
+    "yddPassword": "yddtest123",
+    "tokenExpiration": 2880
+  },
+  "uploadGeoJson": {
+    "surveyPointNumber": 1000
+  },
+  "templatePath": {
+    "surveyReport": "template/survey/report.html",
+    "claimList": "template/survey/claimlist.html",
+    "standardReport": "template/standard/report.html"
+  },
+  "uploadPath": {
+    "survey": {
+      "dest": "upload/survey",
+      "fileSize": 20971520000
+    },
+    "standard": {
+      "dest": "upload/standard",
+      "fileSize": 20971520000
+    },
+    "image": {
+      "dest": "upload/image",
+      "fileSize": 20971520000
+    },
+    "apk": {
+      "dest": "upload/apk",
+      "fileSize": 20971520000
+    },
+    "appLog": {
+      "dest": "upload/applogs",
+      "fileSize": 20971520000
+    }
+  },
+  "gagoApi": {
+    "uri": "https://api.gagogroup.cn/api/",
+    "userName": "guangdong",
+    "password": "guangdong"
+  }
+}
