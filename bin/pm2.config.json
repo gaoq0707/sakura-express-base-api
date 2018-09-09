@@ -1,0 +1,34 @@
+[
+  {
+    "name": "ahic-api",
+    "script": "./dist/app.js",
+    "cwd": "./",
+    "watch": [
+      "dist",
+      "config"
+    ],
+    "ignore_watch": [
+      "node_modules",
+      "src",
+      "upload"
+    ],
+    "instances": 0,
+    "instance_var": "INSTANCE_ID",
+    "exec_mode" : "cluster_mode",
+    "error_file": "/dev/null",
+    "out_file": "/dev/null",
+    "log_date_format": "YYYY-MM-DD HH:mm Z",
+    "env": {
+      "NODE_ENV": "pro"
+    },
+    "env_prepro": {
+      "NODE_ENV": "prepro"
+    },
+    "env_test": {
+      "NODE_ENV": "test"
+    },
+    "env_local": {
+      "NODE_ENV": "default"
+    }
+  }
+]

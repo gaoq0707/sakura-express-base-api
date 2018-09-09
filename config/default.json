@@ -1,0 +1,29 @@
+{
+  "application": {
+    "port": 3000
+  },
+  "system": {
+    "tokenTime": 432000,
+    "encrypKey": "b145760178a872a72ccc8585475328be"
+  },
+  "database": {
+    "redis": {
+      "host": "127.0.0.1",
+      "password": "123456",
+      "port": 6379
+    },
+    "mysql": {
+      "host": "39.107.233.41",
+      "databaseName": "picc_test",
+      "username": "developer",
+      "password": "BHU*9ol.",
+      "port": 16063
+    }
+  },
+  "uploadPath": {
+    "survey": {
+      "dest": "upload/survey",
+      "fileSize": 20971520000
+    }
+  }
+}
