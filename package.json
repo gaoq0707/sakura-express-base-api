@@ -1,7 +1,7 @@
 {
-  "name": "breed-sd-api",
+  "name": "project-base-api",
   "version": "1.0.0",
-  "description": "安华项目养殖保险山东分区后端api",
+  "description": "后端基础框架api",
   "main": "index.js",
   "scripts": {
     "doc": "bin/doc.sh",
@@ -17,10 +17,9 @@
   ],
   "repository": {
     "type": "git",
-    "url": "http://git.azure.gagogroup.cn/anhua-breed/breed-sd-api.git"
+    "url": "http://git.azure.gagogroup.cn/project-standard/project-base-api.git"
   },
   "dependencies": {
-    "@types/md5": "^2.1.32",
     "aglio": "^2.3.0",
     "aglio-theme-planado": "^3.5.0",
     "connect-timeout": "^1.9.0",
@@ -37,6 +36,7 @@
     "uuid": "^3.3.2"
   },
   "devDependencies": {
+    "@types/md5": "^2.1.32",
     "@types/uuid": "^3.4.4",
     "@types/body-parser": "^1.17.0",
     "@types/connect-timeout": "0.0.33",

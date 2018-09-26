@@ -7,13 +7,21 @@
 import * as express from "express";
 import {DBClient, SelectQuery} from "sakura-node-3";
 // common
-import {ApplicationContext} from "./common/applicationcontext";
+import {ApplicationContext} from "./common/application-context";
 import {AppLogger} from "./common/logger";
 // middleware
 import {fetchOptions} from "./middleware/fetch-options";
 import {requestLog} from "./middleware/request-log";
 import {tokenParseExpect} from "./middleware/token-parse-expect";
 import {RequestDad} from "./middleware/request-dad";
+
+import * as utils from "./utils";
+utils.File.makeDir("");
+utils.GIS.getDistance(0, 0, 0, 0);
+
+import {File, GIS} from "./utils";
+File.makeDateDir("");
+GIS.getDistance(0, 0, 0, 0);
 
 // 获取node运行环境
 let NODE_ENV: string = process.env.NODE_ENV || "default";

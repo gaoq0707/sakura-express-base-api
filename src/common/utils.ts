@@ -9,7 +9,7 @@ import * as uuid from "uuid";
 import * as md5 from "md5";
 import * as crypto from "crypto";
 import {Cipher, Decipher} from "crypto";
-import {ApplicationContext} from "./applicationcontext";
+import {ApplicationContext} from "./application-context";
 
 let moment = require("moment");
 

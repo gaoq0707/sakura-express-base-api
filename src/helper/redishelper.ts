@@ -4,7 +4,7 @@
  */
 
 import * as redis from "redis";
-import {ApplicationContext} from "../common/applicationcontext";
+import {ApplicationContext} from "../common/application-context";
 
 /*
 * Redis辅助类
