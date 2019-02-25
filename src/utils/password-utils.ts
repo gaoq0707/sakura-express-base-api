@@ -1,24 +1,30 @@
 /**
- * Created by gaoqiang on 2018/9/9
- * Copyright (c) 2018 (gaoqiang@gagogroup.com). All rights reserved.
+ * 密码工具类
+ * @author gaoqiang@gagogroup.com
+ * @since 1.0.0
+ * @version 2.0.0
  */
+
 
 import * as crypto from "crypto";
 import {Cipher, Decipher} from "crypto";
-import {ApplicationContext} from "../../common/application-context";
+import {SystemOpts} from "../types/config-types";
+import {ApplicationContext} from "../common/application-context";
 
 /*
-* 密码工具类
+* 密码服务
+* @author gaoqiang@gagogroup.com
 * */
-export class Password {
+export class PasswordUtils {
+
   /**
    * aes加密
    * @param data 待加密内容
    * @returns {string}
    */
   static encryption(data: string): string {
-    let encrypKey: string = ApplicationContext.getSystemConfig().encrypKey;
-    let cipher: Cipher = crypto.createCipheriv("aes-256-ecb", encrypKey, "");
+    let system: SystemOpts = ApplicationContext.getSystemConfig();
+    let cipher: Cipher = crypto.createCipheriv("aes-256-ecb", system.encrypKey, "");
     cipher.setAutoPadding(true);
     let cipherChunks: any = [];
     cipherChunks.push(cipher.update(data, "utf8", "base64"));
@@ -36,9 +42,9 @@ export class Password {
       return "";
     }
     try {
-      let encrypKey: string = ApplicationContext.getSystemConfig().encrypKey;
+      let system: SystemOpts = ApplicationContext.getSystemConfig();
       let cipherChunks: any = [];
-      let decipher: Decipher = crypto.createDecipheriv("aes-256-ecb", encrypKey, "");
+      let decipher: Decipher = crypto.createDecipheriv("aes-256-ecb", system.encrypKey, "");
       decipher.setAutoPadding(true);
       cipherChunks.push(decipher.update(data, "base64", "utf8"));
       cipherChunks.push(decipher.final("utf8"));
@@ -61,6 +67,7 @@ export class Password {
   * */
   static encryptPassword(salt: string, password: string): string {
     return crypto.pbkdf2Sync(password, salt, 100, 20, "sha512").toString("hex");
+
   }
 
 }

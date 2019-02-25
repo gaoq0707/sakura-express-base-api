@@ -1,0 +1,23 @@
+{
+  "application": {
+    "port": 3000
+  },
+  "system": {
+    "appTokenTime": 432000,
+    "encrypKey": "1eb80c580e53e34283e06730b52465cf"
+  },
+  "database": {
+    "redis": {
+      "host": "127.0.0.1",
+      "password": "123456",
+      "port": 6379
+    },
+    "mysql": {
+      "host": "127.0.0.1",
+      "databaseName": "test",
+      "username": "root",
+      "password": "123456",
+      "port": 16063
+    }
+  }
+}

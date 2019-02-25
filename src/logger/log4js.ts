@@ -1,7 +1,11 @@
 /**
- * Created by gaoqiang on 2018/9/9
- * Copyright (c) 2018 (gaoqiang@gagogroup.com). All rights reserved.
+ * esri log4js 本地日志,操作类
+ * @author gaoqiang@gagogroup.com
+ * @since 1.0.0
+ * @version 2.0.0
+ * @deprecated
  */
+
 
 import {configure, getLogger, Logger} from "log4js";
 
@@ -17,12 +21,13 @@ import {configure, getLogger, Logger} from "log4js";
 * 6.api请求日志，存放在request文件夹下
 *
 * */
-
 configure({
   appenders: {
     cheese: {
-      type: "file",
-      filename: "../logs/cheese.log",
+      type: "dateFile",
+      filename: `./upload/log`,
+      pattern: `/yyyy/MM/dd/cheese_hh.log`,
+      alwaysIncludePattern: true,
       maxLogSize: 51200,
       backups: 5
     },
@@ -34,44 +39,58 @@ configure({
     requestConsole: {type: "console"},
     exceptionConsole: {type: "console"},
     loginLog: {
-      type: "file",
-      filename: "../logs/login.log",
+      type: "dateFile",
+      filename: `./upload/log`,
+      pattern: `/yyyy/MM/dd/login_hh.log`,
+      alwaysIncludePattern: true,
       maxLogSize: 51200,
       backups: 5
     },
     authLog: {
-      type: "file",
-      filename: "../logs/auth.log",
+      type: "dateFile",
+      filename: `./upload/log`,
+      pattern: `/yyyy/MM/dd/auth_hh.log`,
+      alwaysIncludePattern: true,
       maxLogSize: 51200,
       backups: 5
     },
     operateLog: {
-      type: "file",
-      filename: "../logs/operate.log",
+      type: "dateFile",
+      filename: `./upload/log`,
+      pattern: `/yyyy/MM/dd/operate_hh.log`,
+      alwaysIncludePattern: true,
       maxLogSize: 51200,
       backups: 5
     },
     appLog: {
-      type: "file",
-      filename: "../logs/app.log",
+      type: "dateFile",
+      filename: `./upload/log`,
+      pattern: `/yyyy/MM/dd/app_hh.log`,
+      alwaysIncludePattern: true,
       maxLogSize: 51200,
       backups: 5
     },
     sqlLog: {
-      type: "file",
-      filename: "../logs/sql.log",
+      type: "dateFile",
+      filename: `./upload/log`,
+      pattern: `/yyyy/MM/dd/sql_hh.log`,
+      alwaysIncludePattern: true,
       maxLogSize: 51200,
       backups: 5
     },
     requestLog: {
-      type: "file",
-      filename: "../logs/request.log",
+      type: "dateFile",
+      filename: `./upload/log`,
+      pattern: `/yyyy/MM/dd/request_hh.log`,
+      alwaysIncludePattern: true,
       maxLogSize: 51200,
       backups: 5
     },
     exceptionLog: {
-      type: "file",
-      filename: "../logs/exception.log",
+      type: "dateFile",
+      filename: `./upload/log`,
+      pattern: `/yyyy/MM/dd/exception_hh.log`,
+      alwaysIncludePattern: true,
       maxLogSize: 51200,
       backups: 5
     }

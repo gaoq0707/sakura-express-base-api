@@ -1,22 +1,18 @@
 /**
- * Created by gaoqiang on 2018/9/9
- * Copyright (c) 2018 (gaoqiang@gagogroup.com). All rights reserved.
+ * 随机数工具类
+ * @author gaoqiang@gagogroup.com
+ * @since 1.0.0
+ * @version 2.0.0
  */
 
-import * as uuid from "uuid";
-import * as crypto from "crypto";
 
-/*
-* 随机值工具类
-* */
-export class Random {
-  /*
-   * 生成uuid随机码
-   * @returns {string}
-   * */
-  static getUuid(): string {
-    return uuid.v1().split("-").join("");
-  }
+import * as crypto from "crypto";
+import * as uuid from "uuid";
+import * as shortId from "shortid";
+
+const genId = require("gen-id")("XX");
+
+export class RandomUtils {
 
   /*
   * 生成随机值 token
@@ -50,4 +46,22 @@ export class Random {
     }
     return s_;
   }
+
+  /*
+   * 生成uuid随机码
+   * @returns {string}
+   */
+  static getUuid(): string {
+    return uuid.v1().split("-").join("");
+  }
+
+  /*
+  * 生成短id
+  * */
+  static getShortId() {
+    let seed: any = genId.generate();
+    return shortId.generate() + (seed ? seed : "");
+  }
+
+
 }

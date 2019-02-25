@@ -1,13 +1,16 @@
 /**
- * Created by gaoqiang on 2018/9/9
- * Copyright (c) 2018 (gaoqiang@gagogroup.com). All rights reserved.
+ * redis操作辅助类
+ * @author gaoqiang@gagogroup.com
+ * @since 1.0.0
+ * @version 2.0.0
  */
+
 
 import * as redis from "redis";
 import {ApplicationContext} from "../common/application-context";
 
 /*
-* Redis辅助类
+* redis 辅助类
 * */
 export class RedisHelper {
   private static instance_: RedisHelper;
@@ -46,11 +49,12 @@ export class RedisHelper {
       });
     }));
   }
+
   /*
   * 根据key保存数据
   * @author gaoqiang@gagogroup.com
   * */
-  async setDataWithKey(key: string, content: string, expiredMinutes: number = 60): Promise<void> {
+  async setDataWithKey(key: string, content: string, expiredMinutes: number = 10, forever: boolean = false): Promise<void> {
     this.redisClient_.set(key, content, function (err: Error | void, reply: string) {
       if (err) {
         throw err;
@@ -58,31 +62,16 @@ export class RedisHelper {
         return;
       }
     });
-
-    this.redisClient_.expireat(key, RedisHelper.getExpiredTimestamp_(expiredMinutes));
-  }
-
-  /*
-  * 根据key保存10分钟数据
-  * @author zhangpanlong@gagogroup.com
-  * */
-  async setexDataWithKey(key: string, content: string, expiredMinutes: number = 60, seconds: number = 600): Promise<void> {
-    this.redisClient_.setex(key, seconds, content, function (err: Error | void, reply: string) {
-      if (err) {
-        throw err;
-      } else {
-        return;
-      }
-    });
-
-    this.redisClient_.expireat(key, RedisHelper.getExpiredTimestamp_(expiredMinutes));
+    if (!forever) {
+      this.redisClient_.expireat(key, RedisHelper.getExpiredTimestamp_(expiredMinutes));
+    }
   }
 
   /*
   * 更新数据
   * @author gaoqiang@gagogroup.com
   * */
-  async updateDataWithKey(key: string, content: string): Promise<void> {
+  async updateDataWithKey(key: string, content: string, expiredMinutes: number = 60): Promise<void> {
     this.redisClient_.set(key, content, function (err: Error | void, reply: string) {
       if (err) {
         throw err;
@@ -90,7 +79,9 @@ export class RedisHelper {
         return;
       }
     });
+    this.redisClient_.expireat(key, RedisHelper.getExpiredTimestamp_(expiredMinutes));
   }
+
   /*
   * 清除数据
   * @author gaoqiang@gagogroup.com

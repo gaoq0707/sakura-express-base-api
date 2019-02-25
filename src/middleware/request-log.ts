@@ -1,11 +1,14 @@
 /**
- * Created by gaoqiang on 2018/9/9
- * Copyright (c) 2018 (gaoqiang@gagogroup.com). All rights reserved.
+ * 中间件,请求的request日志处理
+ * @author gaoqiang@gagogroup.com
+ * @since 1.0.0
+ * @version 2.0.0
  */
 
-import {Request, Response, NextFunction} from "../base/base";
-import {RequestLogger} from "../common/logger";
-import {utils} from "../common/utils";
+import {RequestLogger} from "../logger/elk-logger";
+import {RequestParams} from "../types/interfaces";
+import {RequestUtils} from "../utils/request-utils";
+import {Request, Response, NextFunction} from "../base/base-express";
 
 /*
 * request 日志记录
@@ -15,11 +18,14 @@ import {utils} from "../common/utils";
 *
 * */
 export function requestLog(req: Request, res: Response, next: NextFunction) {
-
-  let params: any = utils.Request.getParamsByReq(req);
-  let reqIP: string | string [] = utils.Request.getIpByReq(req);
+  let params: RequestParams = RequestUtils.getParamsByReq(req);
+  let reqIP: string | string [] = RequestUtils.getIpByReq(req);
   if (req.url !== "/favicon.ico" && req.method !== "head") {
-    RequestLogger.info(`[${req.method.toString()}]  ${req.url} from ${reqIP}, body: ${JSON.stringify(params)}`);
+    RequestLogger.info(`[${req.method.toString()}] ${req.url} from ${reqIP}`, {
+      url: req.url,
+      fromIP: reqIP,
+      body: JSON.stringify(params)
+    });
   }
   next();
   return;

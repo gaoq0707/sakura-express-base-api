@@ -1,79 +1,101 @@
 /**
- * Created by gaoqiang on 2018/9/9
- * Copyright (c) 2018 (gaoqiang@gagogroup.com). All rights reserved.
+ * application启动辅助类
+ * @author gaoqiang@gagogroup.com
+ * @since 1.0.0
+ * @version 2.0.0
  */
+
 
 import * as redis from "redis";
 import * as fs from "fs";
+import * as path from "path";
 import {DBClient, DriverOptions, DriverType} from "sakura-node-3";
-import {ApplicationOpts, DBClientOpts, SystemOpts, UploadPath} from "./types/interfaces";
+import {ELKOpts, SystemOpts} from "../types/config-types";
 
 export class ApplicationContext {
   private static instance: ApplicationContext;
 
   private static ENV: string; // 系统环境变量NODE_ENV
   private static INSTANCE_ID: number; // pm2启动的实例ID
+  private static PORT: number; // node的端口号
 
+  /**
+   * 初始化
+   * @param env 环境类型
+   * @param port 服务端口
+   * @param instanceId  实例ID
+   */
   init(env: string, instanceId: string): ApplicationContext {
+    let config: any = ApplicationContext.getConfig();
+
     ApplicationContext.ENV = env;
+    ApplicationContext.PORT = Number(config["application"]["port"]);
     ApplicationContext.INSTANCE_ID = Number(instanceId);
+
+    console.info(`启动服务,node环境${env},端口${ApplicationContext.PORT},实例${instanceId}`);
     return this;
   }
 
+  /**
+   * 单例模式 get实例
+   */
   static getInstance(): ApplicationContext {
     return this.instance || (this.instance = new this());
   }
 
+  /**
+   * 单例模式 set实例
+   * @param app 实例
+   */
   static setInstance(app: ApplicationContext): void {
     this.instance = app;
   }
 
+  /**
+   * 获取当前运行环境
+   */
   static getApplicationENV(): string {
     return ApplicationContext.ENV;
   }
 
+  /**
+   * 获取系统当前端口号
+   */
+  static getApplicationPort(): number {
+    return ApplicationContext.PORT;
+  }
+
+  /**
+   * 获取当前运行的实例ID
+   */
   static getApplicationInstanceId(): number {
     return ApplicationContext.INSTANCE_ID;
   }
 
-  /*
-  * 获取配置项
-  * */
-  static getConfig(): string {
-    // 获取note运行环境
+  /**
+   * 获取配置文件中的配置内容
+   */
+  static getConfig(): any {
+    // 获取node运行环境
     let env: string = this.getApplicationENV();
-    return fs.readFileSync(`config/${env}.json`).toString();
+    let configFilePath: string = path.normalize(`config/${env}.json`);
+    return JSON.parse(fs.readFileSync(configFilePath).toString());
   }
 
   /*
-  * 获取应用配置
-  * */
-  static getAppConfig(): ApplicationOpts {
-    return JSON.parse(this.getConfig())["application"];
-  }
-
-  /*
-  * 获取系统配置
-  * */
-  static getSystemConfig(): SystemOpts {
-    return JSON.parse(this.getConfig())["system"];
-  }
-
-  /*
-  * 启动数据库连接
+  * 启动数据库连接,mysql
   * */
   static setupDatabase(): DBClient {
-    let dbClientOpts: DBClientOpts = JSON.parse(this.getConfig())["database"]["mysql"];
-
-    const driverOptions: DriverOptions = {
+    let config: any = this.getConfig();
+    let dbConfig: any = config["database"]["mysql"];
+    let driverOptions: DriverOptions = {
       type: DriverType.MYSQL,
-      username: dbClientOpts.username,
-      password: dbClientOpts.password, // Utils.decipherDatabase(password),
-      database: dbClientOpts.databaseName,
-      host: dbClientOpts.host,
-      port: dbClientOpts.port
+      username: dbConfig["username"],
+      password: dbConfig["password"],
+      database: dbConfig["databaseName"],
+      host: dbConfig["host"],
+      port: dbConfig["port"]
     };
-
     return DBClient.createClient(driverOptions);
   }
 
@@ -81,16 +103,33 @@ export class ApplicationContext {
   * 获取redis配置
   * */
   static getRedisConfig(): redis.ClientOpts {
-    return JSON.parse(this.getConfig())["database"]["redis"];
+    let config: any = this.getConfig();
+    return config["database"]["redis"];
   }
 
   /*
-  * 获取上传文件夹目录
-  * */
-  static getUploadPathConfig(): UploadPath {
-    return {
-      survey : JSON.parse(this.getConfig())["uploadPath"]["survey"]
+    * 获取系统配置
+    * */
+  static getSystemConfig(): SystemOpts {
+    let config: any = this.getConfig();
+    let systemOpts: SystemOpts = {
+      appTokenTime: Number(config["system"]["appTokenTime"]),
+      apiTokenTime: Number(config["system"]["apiTokenTime"]),
+      encrypKey: config["system"]["encrypKey"]
     };
+    return systemOpts;
+  }
+
+  /*
+  * 获取日志分析的配置
+  * */
+  static getELKConfig(): ELKOpts {
+    let config: any = this.getConfig();
+
+    let host: string = config["elk"]["host"];
+    let port: string = config["elk"]["port"];
+
+    return {host, port};
   }
 
 }

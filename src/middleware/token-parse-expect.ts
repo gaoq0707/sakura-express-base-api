@@ -1,16 +1,22 @@
 /**
- * Created by gaoqiang on 2018/9/9
- * Copyright (c) 2018 (gaoqiang@gagogroup.com). All rights reserved.
+ * 中间件,token验证
+ * @author gaoqiang@gagogroup.com
+ * @since 1.0.0
+ * @version 2.0.0
  */
 
+import {NextFunction, Request, Response} from "../base/base-express";
+import {RequestUtils} from "../utils/request-utils";
+import {AuthLogger} from "../logger/elk-logger";
+import {AuthErrorResponse, ServerErrorResponse} from "../base/base-response";
+import {RedisHelper} from "../helper/redis-helper";
+import {SystemOpts} from "../types/config-types";
+import {ApplicationContext} from "../common/application-context";
+import {KeyPrefix} from "../types/enums";
+import {TimeUtils} from "../utils/time-utils";
+import {ApiError} from "sakura-node-3";
+
 import * as url from "url";
-import {AuthLogger} from "../common/logger";
-import {Request, Response, NextFunction} from "../base/base";
-import {RedisHelper} from "../helper/redishelper";
-import {ParamsErrorResponse, ServerErrorResponse, BadRequestResponse, AuthErrorResponse} from "../base/baseresponse";
-import {utils} from "../common/utils";
-import {ApiError, HttpResponse} from "sakura-node-3";
-import {RedisKeyPrefix} from "../common/types/enums";
 
 /*
 * token过滤,需验证redis
@@ -36,70 +42,58 @@ export function tokenParseExpect(exceptionsRoute: string[], exceptionsArr: strin
       }
     }
 
-    let reqIP: string | string [] = utils.Request.getIpByReq(req);
+    let reqIP: string | string [] = RequestUtils.getIpByReq(req);
+    let reqUrl: string = req.url;
     // token validation
     try {
-      const token: string = utils.Request.getTokenByReq(req);
+      const token: string = RequestUtils.getTokenByReq(req);
       // 获取不到token
       if (!token) {
-        AuthLogger.info(`MISSING_AUTHORIZATION_TOKEN ${ req.url }  ${reqIP}`);
-        res.status(401).json({
-          error: {
-            code: 401,
-            message: "AUTH_MISSING_TOKEN"
-          }
-        });
+        AuthLogger.info(`MISSING_AUTHORIZATION_TOKEN ${ reqUrl }  ${reqIP}`);
+        next(AuthErrorResponse.missingAuthToken());
         return;
       }
 
       let redisHelper: RedisHelper = RedisHelper.getInstance();
-      redisHelper.getDataByKey(RedisKeyPrefix.USER_TOKEN + token).then(function (redisUser: string) {
+      let system: SystemOpts = ApplicationContext.getSystemConfig();
+      redisHelper.getDataByKey(KeyPrefix.USER_TOKEN + token).then(function (redisUser: string) {
         if (redisUser) {
           // 当前时间戳秒值
-          let nowTime: number = utils.Time.getTime();
+          let nowTime: number = TimeUtils.getTime();
           let userInfo: any = JSON.parse(redisUser);
+          req.userInfo = userInfo;
+          let tokenTime: number = system.appTokenTime;
+          if (reqUrl.split("/")[1] === "appapi") {
+            tokenTime = system.apiTokenTime;
+          }
           // 如果五天之内没有操作，清楚登陆痕迹
-          if (userInfo.lastOperaotionTime < nowTime - 7776000) {
+          if (userInfo.lastOperationTime < nowTime - tokenTime) {
             // 清除redis中的用户缓存
-            redisHelper.clearDataWithKey(RedisKeyPrefix.USER_TOKEN + token);
+            redisHelper.clearDataWithKey(KeyPrefix.USER_TOKEN + token);
             AuthLogger.info(`MISSING_AUTHORIZATION_TOKEN ${ req.url }  ${reqIP}`);
-            res.status(401).json({
-              error: {
-                code: 401,
-                message: "AUTH_REQUIRED_ERROR"
-              }
-            });
+            next(AuthErrorResponse.authRequired());
             return;
           } else {
             // 用户最后操作时间
-            userInfo.lastOperaotionTime = nowTime;
+            userInfo.lastOperationTime = nowTime;
             // 将用户信息保存到redis中,不更新过期时间
-            redisHelper.updateDataWithKey(RedisKeyPrefix.USER_TOKEN + token, JSON.stringify(userInfo)).then(() => {
+            redisHelper.updateDataWithKey(KeyPrefix.USER_TOKEN + token, JSON.stringify(userInfo), tokenTime / 60).then(() => {
               next();
               return;
             });
           }
         } else {
           AuthLogger.info(`MISSING_AUTHORIZATION_TOKEN ${ req.url }  ${reqIP}`);
-          res.status(401).json({
-            error: {
-              code: 401,
-              message: "AUTH_REQUIRED_ERROR"
-            }
-          });
+          next(AuthErrorResponse.authRequired());
           return;
         }
       });
     } catch (err) {
       AuthLogger.info(`MISSING_AUTHORIZATION_TOKEN ${ req.url }  ${reqIP}`);
-      res.status(500).json({
-        error: {
-          code: 500,
-          message: "SERVER_HAPPEN_EXCEPTION",
-          errors: new ApiError("EXCEPTION", err.message)
-        }
-      });
+      next(new ServerErrorResponse(new ApiError("EXCEPTION", err.message), "SERVER_HAPPEN_EXCEPTION"));
       return;
     }
   };
 }
+
+
