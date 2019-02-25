@@ -1,5 +1,5 @@
 # OVERVIEW
-该工程用于提供安华养殖险项目APP后端API.
+该工程用于提供{{projectName}}项目后端API.
 
 # BUILD
 使用`tsc`或`gulp`
